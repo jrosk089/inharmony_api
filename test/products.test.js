@@ -8,10 +8,9 @@ const app = require('../index');
 
 chai.use(chaiHttp);
 
-//Test server
-describe('App', () => {
+describe('Product routes', () => {
     //Products - Basic GET
-    describe('basic GET for Products', () => {
+    describe('basic GET', () => {
         it('responds with status 200', (done) => {
             chai.request(app)
                 .get('/products')
@@ -50,7 +49,7 @@ describe('App', () => {
     });
 
     //Products - GET for ID
-    describe('GET by ID for Products', () => {
+    describe('GET by ID', () => {
         it('responds with status 200 for ID 1', (done) => {
             chai.request(app)
                 .get('/products/1')
