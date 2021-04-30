@@ -42,7 +42,7 @@ describe('Product routes', () => {
                     if (err){
                         throw err
                     };
-                    expect(res.body).to.have.lengthOf.at.least(1);
+                    expect(res.body).to.have.lengthOf.at.least(2);
                     done();
                 })
         });
@@ -122,5 +122,47 @@ describe('Product routes', () => {
                     done();
                 })
         });
+    });
+
+    //Post
+    describe('Post product', () => {
+        it('returns a status of 201', (done) => {
+            const testObject = {
+                name: 'Testname',
+                family: 'Testfamily',
+                description: 'Blahblah',
+                price: 200.00,
+                num_in_stock: 4
+            };
+
+            chai.request(app)
+                .post('/products')
+                .send(testObject)
+                .end((err, res) => {
+                     if (err){
+                         throw err
+                     };
+                     expect(res).to.have.status(201);
+                     done();
+                 })
+        });
+
+        it('returns an error if incomplete object is added', (done) =>{
+            const incomplete = {
+                name: 'Test',
+                description: 'Not a complete item'
+            };
+
+            chai.request(app)
+                .post('/products')
+                .send(incomplete)
+                .end((err, res) => {
+                    if (err){
+                        throw err
+                    };
+                    expect(res).to.have.status(400);
+                    done();
+                })
+        })
     })
 });

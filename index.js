@@ -17,11 +17,18 @@ app.use('/products', productsRouter);
 
 //import & mount customersRouter
 
+const customersRouter = require('./routes/customersRouter');
+app.use('/customers', customersRouter);
+
 //import & mount ordersRouter
 
 
 //Create server
 const port = 3000;
+
+if(process.env.NODE_ENV === 'test'){
+    console.log('testing')
+};
 
 app.listen(port, () => {
     console.log('App listening at http://localhost:' + port)
