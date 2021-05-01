@@ -15,10 +15,10 @@ app.use(morgan('tiny'));
 const productsRouter = require('./routes/productsRouter');
 app.use('/products', productsRouter);
 
-//import & mount customersRouter
+//import & mount usersRouter
 
-const customersRouter = require('./routes/customersRouter');
-app.use('/customers', customersRouter);
+const usersRouter = require('./routes/usersRouter');
+app.use('/users', usersRouter);
 
 //import & mount ordersRouter
 
