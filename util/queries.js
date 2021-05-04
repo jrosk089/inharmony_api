@@ -1,7 +1,7 @@
 const Pool = require('pg').Pool;
 
 //check if testing environment - if so, use test database; otherwise, use actual database
-const database = process.env.NODE_ENV === 'test' ? 'inharmony_api_test' : 'inharmony_api';
+const database = (process.env.NODE_ENV === 'test') ? 'inharmony_api_test' : 'inharmony_api';
 
 const pool = new Pool({
     user: 'jon',
@@ -9,7 +9,6 @@ const pool = new Pool({
     database: database,
     port: 5432
 });
-
 
 //products
 const getProducts = (req, res) => {
@@ -47,7 +46,7 @@ const addProduct = (req, res) => {
     } else {
         const {name, family, description, price, num_in_stock} = req.body;
 
-        pool.query(`INSERT INTO products (name, family, description, price, num_in_stock) VALUES ($1, $2, $3, $4, $5)`, 
+        pool.query('INSERT INTO products (name, family, description, price, num_in_stock) VALUES ($1, $2, $3, $4, $5);', 
         [name, family, description, price, num_in_stock], 
         (err, result) => {
             if (err){
@@ -57,6 +56,22 @@ const addProduct = (req, res) => {
             res.status(201).send(`Created entry for ${name}`)
         })
     }   
+};
+
+const updateProductById = (req, res) => {
+    const id = req.params.id;
+    
+    const {name, family, description, price, num_in_stock} = req.body;
+    
+    pool.query('UPDATE products SET name = $1, family = $2, description = $3, price = $4, num_in_stock = $5 WHERE product_id = $6;',
+        [name, family, description, price, num_in_stock, id],
+        (err, result) => {
+            if (err){
+                throw err
+            };
+
+            res.status(200).send({name: name, family: family, description: description, price: price, num_in_stock: num_in_stock})    
+     });
 };
 
 //users
@@ -107,11 +122,26 @@ const addUser = (req, res) => {
     }
 };
 
+// Orders
+
+const getOrders = (req, res) => {
+    pool.query('SELECT * FROM orders', (err, result) => {
+        if (err){
+            throw err
+        };
+        res.status(200).json(result.rows)
+    })
+};
+
+
+
 module.exports = {
     getProducts,
     getProductsById,
     addProduct,
+    updateProductById,
     getUsers,
     getUsersById,
-    addUser
+    addUser,
+    getOrders
 };

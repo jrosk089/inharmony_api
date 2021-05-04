@@ -164,5 +164,60 @@ describe('Product routes', () => {
                     done();
                 })
         })
+    });
+
+
+    //PUT (by ID)
+    describe('PUT route', () => {
+        const toUpdate = {
+            name: 'Updated1',
+            family: 'Updatedfamily',
+            description: 'Bloodle',
+            price: 500.00,
+            num_in_stock: 4
+        };
+
+        it('returns a status of 200', (done) => {
+            chai.request(app)
+                .put('/products/1')
+                .send(toUpdate)
+                .end((err, res) => {
+                    if (err) {
+                        throw err
+                    };
+                    expect(res).to.have.status(200);
+                    done();
+                })
+        });
+
+        it('returns updated object', (done) => {
+            chai.request(app)
+                .put('/products/1')
+                .send(toUpdate)
+                .end((err, res) => {
+                    if (err) {
+                        throw err
+                    };
+                    expect(res).to.be.a('object');
+                    expect(res.body).to.deep.equal(toUpdate);
+                    done();
+                })
+        });
+    });
+
+    //DELETE route
+
+    describe('DELETE route', () => {
+        it('should return status 204', done => {
+            chai.request(app)
+                .delete('/products/1')
+                .end((err, res) => {
+                    if (err) {
+                        throw err
+                    };
+                    expect(res).to.have.status(204);
+                    done();
+                })
+        });
     })
 });

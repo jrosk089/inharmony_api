@@ -21,7 +21,8 @@ const usersRouter = require('./routes/usersRouter');
 app.use('/users', usersRouter);
 
 //import & mount ordersRouter
-
+const ordersRouter = require('./routes/ordersRouter');
+app.use('/orders', ordersRouter);
 
 //Create server
 const port = 3000;
