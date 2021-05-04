@@ -13,16 +13,16 @@ app.use(morgan('tiny'));
 
 //import & mount productsRouter
 const productsRouter = require('./routes/productsRouter');
-app.use('/products', productsRouter);
+app.use('/api/products', productsRouter);
 
 //import & mount usersRouter
 
 const usersRouter = require('./routes/usersRouter');
-app.use('/users', usersRouter);
+app.use('/api/users', usersRouter);
 
 //import & mount ordersRouter
 const ordersRouter = require('./routes/ordersRouter');
-app.use('/orders', ordersRouter);
+app.use('/api/orders', ordersRouter);
 
 //Create server
 const port = 3000;

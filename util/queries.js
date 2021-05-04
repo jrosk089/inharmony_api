@@ -44,10 +44,10 @@ const addProduct = (req, res) => {
     if (missing.length > 0){
         res.status(400).send(`Missing values from request: ${missing}`)
     } else {
-        const {name, family, description, price, num_in_stock} = req.body;
+        const {name, category, description, price, num_in_stock} = req.body;
 
-        pool.query('INSERT INTO products (name, family, description, price, num_in_stock) VALUES ($1, $2, $3, $4, $5);', 
-        [name, family, description, price, num_in_stock], 
+        pool.query('INSERT INTO products (name, category, description, price, num_in_stock) VALUES ($1, $2, $3, $4, $5);', 
+        [name, category, description, price, num_in_stock], 
         (err, result) => {
             if (err){
                 throw err
@@ -61,16 +61,16 @@ const addProduct = (req, res) => {
 const updateProductById = (req, res) => {
     const id = req.params.id;
     
-    const {name, family, description, price, num_in_stock} = req.body;
+    const {name, category, description, price, num_in_stock} = req.body;
     
     pool.query('UPDATE products SET name = $1, family = $2, description = $3, price = $4, num_in_stock = $5 WHERE product_id = $6;',
-        [name, family, description, price, num_in_stock, id],
+        [name, category, description, price, num_in_stock, id],
         (err, result) => {
             if (err){
                 throw err
             };
 
-            res.status(200).send({name: name, family: family, description: description, price: price, num_in_stock: num_in_stock})    
+            res.status(200).send({name: name, category: category, description: description, price: price, num_in_stock: num_in_stock})    
      });
 };
 
