@@ -10,7 +10,10 @@ app.use(
     extended: true,
   })
 );
-app.use(morgan("tiny"));
+
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan("tiny"));
+}
 
 //import & mount productsRouter
 const productsRouter = require("./routes/productsRouter");

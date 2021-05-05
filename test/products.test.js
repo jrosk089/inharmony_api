@@ -66,6 +66,20 @@ describe("Product routes", () => {
           expect(res.body["num_in_stock"]).to.equal(1);
           done();
         });
+
+      it("should return 404 if id is invalid", (done) => {
+        chai
+          .request(app)
+          .get("/api/products/204")
+          .end((err, res) => {
+            if (err) {
+              throw err;
+            }
+            expect(res).to.have.status(404);
+            expect(res.body).to.be.an("object").and.to.be.empty;
+            done();
+          });
+      });
     });
   });
 
@@ -137,7 +151,7 @@ describe("Product routes", () => {
         });
     });
 
-    it("should not update a product if product_id is included", (done) => {
+    it("should not update a product if product_id is included in the body", (done) => {
       chai
         .request(app)
         .put("/api/products/1")
@@ -154,6 +168,20 @@ describe("Product routes", () => {
           expect(res.body).to.be.an("object");
           expect(res.body).to.haveOwnProperty("error");
           expect(res.body.error).to.equal("ID cannot be updated");
+          done();
+        });
+    });
+
+    it("should return 404 if id is invalid", (done) => {
+      chai
+        .request(app)
+        .get("/api/products/204")
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(404);
+          expect(res.body).to.be.an("object").and.to.be.empty;
           done();
         });
     });
@@ -187,5 +215,19 @@ describe("Product routes", () => {
             });
         });
     });
+  });
+
+  it("should return 404 if id is invalid", (done) => {
+    chai
+      .request(app)
+      .get("/api/products/204")
+      .end((err, res) => {
+        if (err) {
+          throw err;
+        }
+        expect(res).to.have.status(404);
+        expect(res.body).to.be.an("object").and.to.be.empty;
+        done();
+      });
   });
 });

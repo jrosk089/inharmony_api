@@ -8,6 +8,16 @@ const {
   deleteProduct,
 } = require("../util/knexQueries");
 
+productsRouter.param("id", async (req, res, next, id) => {
+  const product = await getProductById(id);
+  if (product) {
+    req.product = product;
+    next();
+  } else {
+    res.status(404).send();
+  }
+});
+
 productsRouter.get("/", async (req, res, next) => {
   try {
     const products = await getAllProducts();
