@@ -2,33 +2,33 @@
 
 module.exports = {
   test: {
-    client: 'pg',
-    connection: 'postgres://localhost/inharmony_api_test',
+    client: "pg",
+    connection: "postgres://localhost/inharmony_api_test",
     migrations: {
-      directory: __dirname + '/db/migrations'
+      directory: __dirname + "/db/migrations",
     },
     seeds: {
-      directory: __dirname + '/db/seeds/test'
-    }
+      directory: __dirname + "/db/seeds/test",
+    },
   },
   development: {
-    client: 'pg',
-    connection: 'postgres://localhost/inharmony_api',
+    client: "pg",
+    connection: "postgres://localhost/inharmony_api",
     migrations: {
-      directory: __dirname + '/db/migrations'
+      directory: __dirname + "/db/migrations",
     },
     seeds: {
-      directory: __dirname + '/db/seeds/development'
-    }
+      directory: __dirname + "/db/seeds/development",
+    },
   },
   production: {
-    client: 'pg',
+    client: "pg",
     connection: process.env.DATABASE_URL,
     migrations: {
-      directory: __dirname + '/db/migrations'
+      directory: __dirname + "/db/migrations",
     },
     seeds: {
-      directory: __dirname + '/db/seeds/production'
-    }
+      directory: __dirname + "/db/seeds/production",
+    },
   },
 };

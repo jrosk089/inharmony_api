@@ -1,6 +1,6 @@
 const express = require('express');
 const usersRouter = express.Router({ mergeParams: true });
-const { getUsers, getUsersById, addUser } = require('../util/queries');
+const { getUsers, getUsersById, addUser } = require('../util/pgQueries');
 
 usersRouter.get('/', getUsers);
 
