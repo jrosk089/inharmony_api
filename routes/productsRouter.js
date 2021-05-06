@@ -27,13 +27,8 @@ productsRouter.get("/", async (req, res, next) => {
   }
 });
 
-productsRouter.get("/:id", async (req, res, next) => {
-  try {
-    const product = await getProductById(req.params.id);
-    res.status(200).json(product);
-  } catch (err) {
-    next(err);
-  }
+productsRouter.get("/:id", (req, res, next) => {
+  res.status(200).json(req.product);
 });
 
 productsRouter.post("/", async (req, res, next) => {
