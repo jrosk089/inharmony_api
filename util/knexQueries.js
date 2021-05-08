@@ -32,6 +32,8 @@ const addUser = (user) => Users().insert(user, "user_id");
 const updateUser = (userId, updates) =>
   Users().where("user_id", userId).update(updates, "user_id");
 
+const deleteUser = (userId) => Users().where("user_id", userId).del();
+
 module.exports = {
   //products
   getAllProducts,
@@ -44,4 +46,5 @@ module.exports = {
   getUserById,
   addUser,
   updateUser,
+  deleteUser,
 };

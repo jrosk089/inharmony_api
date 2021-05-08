@@ -67,6 +67,19 @@ describe("Users routes", () => {
           done();
         });
     });
+
+    it("should return 404 if id is invalid", (done) => {
+      chai
+        .request(app)
+        .get("/api/users/1234567")
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(404);
+          done();
+        });
+    });
   });
 
   //POST
@@ -76,7 +89,6 @@ describe("Users routes", () => {
         .request(app)
         .post("/api/users")
         .send({
-          user_id: "123e4567-e89b-12d3-a456-426614174004",
           email: "email4@email.com",
           last_name: "lastname4",
           first_name: "firstname4",
@@ -88,9 +100,7 @@ describe("Users routes", () => {
           expect(res).to.have.status(201);
           expect(res).to.be.an("object");
           expect(res.body).to.haveOwnProperty("user_id");
-          expect(res.body.user_id).to.equal(
-            "123e4567-e89b-12d3-a456-426614174004"
-          );
+          expect(res.body.user_id).to.have.lengthOf(36);
           expect(res.body).to.haveOwnProperty("email");
           expect(res.body.email).to.equal("email4@email.com");
           expect(res.body).to.haveOwnProperty("last_name");
@@ -129,6 +139,73 @@ describe("Users routes", () => {
           expect(res.body).to.haveOwnProperty("first_name");
           expect(res.body.first_name).to.equal("firstname1");
           done();
+        });
+    });
+
+    it("should not update a user if user_id is included in the body", (done) => {
+      chai
+        .request(app)
+        .put("/api/users/123e4567-e89b-12d3-a456-426614174001")
+        .send({
+          user_id: "123e4567-e89b-12d3-a456-426614174009",
+          email: "up@dated.com",
+        })
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(422);
+          expect(res.body).to.be.an("object");
+          expect(res.body).to.haveOwnProperty("error");
+          expect(res.body.error).to.equal("ID cannot be updated");
+          done();
+        });
+    });
+
+    it("should return 404 if id is invalid", (done) => {
+      chai
+        .request(app)
+        .put("/api/users/1234567")
+        .send({
+          email: "up@dated.com",
+          last_name: "updatedname",
+        })
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(404);
+          done();
+        });
+    });
+  });
+
+  describe("DELETE users/:id", () => {
+    it("should delete a user", (done) => {
+      chai
+        .request(app)
+        .delete("/api/users/123e4567-e89b-12d3-a456-426614174001")
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(200);
+          expect(res.body).to.haveOwnProperty("message");
+          expect(res.body.message).to.equal(
+            "User with ID 123e4567-e89b-12d3-a456-426614174001 deleted"
+          );
+          chai
+            .request(app)
+            .get("/api/users")
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+              expect(res).to.have.status(200);
+              expect(res.body).to.be.an("array");
+              expect(res.body).to.have.lengthOf(2);
+              done();
+            });
         });
     });
   });
