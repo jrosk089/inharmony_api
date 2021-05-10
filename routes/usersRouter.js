@@ -47,7 +47,7 @@ usersRouter.post("/", async (req, res, next) => {
 
 usersRouter.put("/:id", async (req, res, next) => {
   if (req.body.hasOwnProperty("user_id")) {
-    res.status(422).json({
+    return res.status(422).json({
       error: "ID cannot be updated",
     });
   }

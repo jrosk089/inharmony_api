@@ -28,6 +28,11 @@ app.use("/api/users", usersRouter);
 const ordersRouter = require("./routes/ordersRouter");
 app.use("/api/orders", ordersRouter);
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
 //Create server
 const port = 3000;
 

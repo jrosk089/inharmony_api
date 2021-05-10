@@ -34,6 +34,15 @@ const updateUser = (userId, updates) =>
 
 const deleteUser = (userId) => Users().where("user_id", userId).del();
 
+//ORDERS
+
+const Orders = () => knex("orders");
+
+const getAllOrders = () => Orders().select();
+
+const getOrderById = (orderId) =>
+  Orders().where("order_id", parseInt(orderId)).first();
+
 module.exports = {
   //products
   getAllProducts,
@@ -47,4 +56,7 @@ module.exports = {
   addUser,
   updateUser,
   deleteUser,
+  //orders
+  getAllOrders,
+  getOrderById,
 };
