@@ -2,7 +2,7 @@ exports.seed = function (knex) {
   // Deletes ALL existing entries
   return knex("users")
     .del()
-    .then(function () {
+    .then(() => {
       // Inserts seed entries
       return knex("users").insert({
         user_id: "123e4567-e89b-12d3-a456-426614174001",

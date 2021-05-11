@@ -9,6 +9,10 @@ const {
 } = require("../util/knexQueries");
 
 productsRouter.param("id", async (req, res, next, id) => {
+  if (isNaN(parseInt(id))) {
+    return res.status(404).send();
+  }
+
   const product = await getProductById(id);
   if (product) {
     req.product = product;

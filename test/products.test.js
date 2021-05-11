@@ -66,20 +66,34 @@ describe("Product routes", () => {
           expect(res.body["num_in_stock"]).to.equal(1);
           done();
         });
+    });
 
-      it("should return 404 if id is invalid", (done) => {
-        chai
-          .request(app)
-          .get("/api/products/204")
-          .end((err, res) => {
-            if (err) {
-              throw err;
-            }
-            expect(res).to.have.status(404);
-            expect(res.body).to.be.an("object").and.to.be.empty;
-            done();
-          });
-      });
+    it("should return 404 if id is invalid", (done) => {
+      chai
+        .request(app)
+        .get("/api/products/204")
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(404);
+          expect(res.body).to.be.an("object").and.to.be.empty;
+          done();
+        });
+    });
+
+    it("should return status 404 if product_id is not a number", (done) => {
+      chai
+        .request(app)
+        .get("/api/products/bolivia")
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(404);
+          expect(res.body).to.be.an("object").and.to.be.empty;
+          done();
+        });
     });
   });
 
@@ -171,20 +185,6 @@ describe("Product routes", () => {
           done();
         });
     });
-
-    it("should return 404 if id is invalid", (done) => {
-      chai
-        .request(app)
-        .get("/api/products/204")
-        .end((err, res) => {
-          if (err) {
-            throw err;
-          }
-          expect(res).to.have.status(404);
-          expect(res.body).to.be.an("object").and.to.be.empty;
-          done();
-        });
-    });
   });
 
   //DELETE
@@ -215,19 +215,5 @@ describe("Product routes", () => {
             });
         });
     });
-  });
-
-  it("should return 404 if id is invalid", (done) => {
-    chai
-      .request(app)
-      .get("/api/products/204")
-      .end((err, res) => {
-        if (err) {
-          throw err;
-        }
-        expect(res).to.have.status(404);
-        expect(res.body).to.be.an("object").and.to.be.empty;
-        done();
-      });
   });
 });
