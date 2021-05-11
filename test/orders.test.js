@@ -36,7 +36,7 @@ describe("Orders routes", () => {
             "123e4567-e89b-12d3-a456-426614174001"
           );
           expect(res.body[0]).to.haveOwnProperty("order_id");
-          expect(res.body[0].order_id).to.equal(4);
+          expect(res.body[0].order_id).to.equal(1);
           done();
         });
     });
@@ -46,7 +46,7 @@ describe("Orders routes", () => {
     it("should return a single order", (done) => {
       chai
         .request(app)
-        .get("/api/orders/4")
+        .get("/api/orders/1")
         .end((err, res) => {
           if (err) {
             throw err;
@@ -54,7 +54,7 @@ describe("Orders routes", () => {
           expect(res).to.have.status(200);
           expect(res).to.be.an("object");
           expect(res.body).to.haveOwnProperty("order_id");
-          expect(res.body.order_id).to.equal(4);
+          expect(res.body.order_id).to.equal(1);
           expect(res.body).to.haveOwnProperty("user_id");
           expect(res.body.user_id).to.equal(
             "123e4567-e89b-12d3-a456-426614174001"
