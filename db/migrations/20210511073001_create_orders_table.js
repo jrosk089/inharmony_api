@@ -1,4 +1,4 @@
-exports.up = async (knex) => {
+exports.up = (knex) => {
   return knex.schema.createTable("orders", (table) => {
     table.increments("order_id");
     table

@@ -38,7 +38,17 @@ const deleteUser = (userId) => Users().where("user_id", userId).del();
 
 const Orders = () => knex("orders");
 
-const getAllOrders = () => Orders().select();
+//need to respond with a table with at least user_id, order_id and product names in the order
+
+const getAllOrders = () =>
+  Users()
+    .select("users.user_id", "orders.order_id")
+    .count("products.name AS num_items")
+    .sum("products.price AS total_price")
+    .join("orders", "users.user_id", "orders.user_id")
+    .join("orders_products", "orders.order_id", "orders_products.order_id")
+    .join("products", "orders_products.product_id", "products.product_id")
+    .groupBy(1, 2);
 
 const getOrderById = (orderId) =>
   Orders().where("order_id", parseInt(orderId)).first();
