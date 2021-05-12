@@ -36,22 +36,36 @@ const deleteUser = (userId) => Users().where("user_id", userId).del();
 
 //ORDERS
 
-const Orders = () => knex("orders");
+const Orders = () => knex("orders AS o");
 
-//need to respond with a table with at least user_id, order_id and product names in the order
+//return order id, user id, number of items in order and total price of order
 
 const getAllOrders = () =>
-  Users()
-    .select("users.user_id", "orders.order_id")
-    .count("products.name AS num_items")
-    .sum("products.price AS total_price")
-    .join("orders", "users.user_id", "orders.user_id")
-    .join("orders_products", "orders.order_id", "orders_products.order_id")
-    .join("products", "orders_products.product_id", "products.product_id")
-    .groupBy(1, 2);
+  Orders()
+    .select("o.order_id", "u.user_id")
+    .count("p.name AS num_items")
+    .sum("p.price AS total_price")
+    .join("users AS u", "o.user_id", "u.user_id")
+    .join("orders_products AS op", "o.order_id", "op.order_id")
+    .join("products AS p", "op.product_id", "p.product_id")
+    .groupBy(1, 2)
+    .orderBy(1, "ASC");
 
 const getOrderById = (orderId) =>
-  Orders().where("order_id", parseInt(orderId)).first();
+  Orders()
+    .where("o.order_id", orderId)
+    .select(
+      "o.order_id",
+      "u.user_id",
+      "p.name AS product_name",
+      "p.price AS unit_price"
+    )
+    .count("p.description AS num_units")
+    .join("users AS u", "o.user_id", "u.user_id")
+    .join("orders_products AS op", "o.order_id", "op.order_id")
+    .join("products AS p", "op.product_id", "p.product_id")
+    .groupBy(1, 2, 3, 4)
+    .orderBy(3, "ASC");
 
 module.exports = {
   //products

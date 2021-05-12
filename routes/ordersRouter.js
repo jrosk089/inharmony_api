@@ -8,12 +8,12 @@ ordersRouter.param("id", async (req, res, next, id) => {
   }
 
   const order = await getOrderById(id);
-  if (order) {
-    req.order = order;
-    next();
-  } else {
-    res.status(404).send();
+
+  if (!order || order.length < 1) {
+    return res.status(404).send();
   }
+  req.order = order;
+  next();
 });
 
 ordersRouter.get("/", async (req, res, next) => {

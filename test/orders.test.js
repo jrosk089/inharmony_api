@@ -31,8 +31,9 @@ describe("Orders routes", () => {
           expect(res).to.have.status(200);
           expect(res.body).to.be.an("array");
           expect(res.body).to.have.lengthOf(3);
-          expect(res.body[0]).to.haveOwnProperty("user_id");
           expect(res.body[0]).to.haveOwnProperty("order_id");
+          expect(res.body[0].order_id).to.equal(1);
+          expect(res.body[0]).to.haveOwnProperty("user_id");
           expect(res.body[0]).to.haveOwnProperty("num_items");
           expect(res.body[0]).to.haveOwnProperty("total_price");
           done();
@@ -50,13 +51,18 @@ describe("Orders routes", () => {
             throw err;
           }
           expect(res).to.have.status(200);
-          expect(res).to.be.an("object");
-          expect(res.body).to.haveOwnProperty("order_id");
-          expect(res.body.order_id).to.equal(1);
-          expect(res.body).to.haveOwnProperty("user_id");
-          expect(res.body.user_id).to.equal(
+          expect(res.body).to.be.an("array");
+          expect(res.body).to.have.lengthOf(3);
+          expect(res.body[0]).to.haveOwnProperty("order_id");
+          expect(res.body[0].order_id).to.equal(1);
+          expect(res.body[0]).to.haveOwnProperty("user_id");
+          expect(res.body[0].user_id).to.equal(
             "123e4567-e89b-12d3-a456-426614174001"
           );
+          expect(res.body[0]).to.haveOwnProperty("product_name");
+          expect(res.body[0].product_name).to.equal("testname1");
+          expect(res.body[0]).to.haveOwnProperty("num_units");
+          expect(res.body[0].num_units).to.equal("1");
           done();
         });
     });
