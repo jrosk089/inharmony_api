@@ -28,6 +28,10 @@ app.use("/api/users", usersRouter);
 const ordersRouter = require("./routes/ordersRouter");
 app.use("/api/orders", ordersRouter);
 
+//import & mount cartsRouter
+const cartsRouter = require("./routes/cartsRouter");
+app.use("/api/carts", cartsRouter);
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something broke!");

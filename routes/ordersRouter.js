@@ -27,8 +27,7 @@ ordersRouter.get("/", async (req, res, next) => {
 
 ordersRouter.get("/:id", async (req, res, next) => {
   try {
-    const order = await getOrderById(req.params.id);
-    res.status(200).json(order);
+    res.status(200).json(req.order);
   } catch (err) {
     next(err);
   }

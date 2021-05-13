@@ -61,6 +61,8 @@ describe("Orders routes", () => {
           );
           expect(res.body[0]).to.haveOwnProperty("product_name");
           expect(res.body[0].product_name).to.equal("testname1");
+          expect(res.body[0]).to.haveOwnProperty("unit_price");
+          expect(res.body[0].unit_price).to.equal("400.00");
           expect(res.body[0]).to.haveOwnProperty("num_units");
           expect(res.body[0].num_units).to.equal("1");
           done();

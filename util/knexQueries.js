@@ -67,6 +67,64 @@ const getOrderById = (orderId) =>
     .groupBy(1, 2, 3, 4)
     .orderBy(3, "ASC");
 
+//CARTS
+
+const Carts = () => knex("carts AS c");
+
+//return cart id, user id, number of items in cart and total price of cart
+
+const getAllCarts = () =>
+  Carts()
+    .select("c.cart_id", "u.user_id")
+    .count("p.name AS num_items")
+    .sum("p.price AS total_price")
+    .join("users AS u", "c.user_id", "u.user_id")
+    .join("carts_products AS cp", "c.cart_id", "cp.cart_id")
+    .join("products AS p", "cp.product_id", "p.product_id")
+    .groupBy(1, 2)
+    .orderBy(1, "ASC");
+
+const getCartById = (cartId) =>
+  Carts()
+    .where("c.cart_id", cartId)
+    .select(
+      "c.cart_id",
+      "u.user_id",
+      "p.name AS product_name",
+      "p.price AS unit_price"
+    )
+    .count("p.description AS num_units")
+    .join("users AS u", "c.user_id", "u.user_id")
+    .join("carts_products AS cp", "c.cart_id", "cp.cart_id")
+    .join("products AS p", "cp.product_id", "p.product_id")
+    .groupBy(1, 2, 3, 4)
+    .orderBy(3, "ASC");
+
+const addCart = async (cart) => {
+  const { user_id, product_ids } = cart;
+  const cartId = await Carts().insert({ user_id: user_id }, "cart_id");
+
+  product_ids.forEach(async (productId) => {
+    await knex("carts_products").insert({
+      product_id: productId,
+      cart_id: cartId[0],
+    });
+  });
+
+  return cartId[0];
+};
+
+const addProductIntoCart = (cartId, productId) =>
+  knex("carts_products").insert({ cart_id: cartId, product_id: productId }, [
+    "cart_id",
+    "product_id",
+  ]);
+
+const deleteProductFromCart = (cartId, productId) =>
+  knex("carts_products")
+    .where({ cart_id: cartId, product_id: productId })
+    .del();
+
 module.exports = {
   //products
   getAllProducts,
@@ -83,4 +141,10 @@ module.exports = {
   //orders
   getAllOrders,
   getOrderById,
+  //carts
+  getAllCarts,
+  getCartById,
+  addCart,
+  addProductIntoCart,
+  deleteProductFromCart,
 };
