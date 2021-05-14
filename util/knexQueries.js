@@ -27,10 +27,17 @@ const getAllUsers = () => Users().select();
 
 const getUserById = (userId) => Users().where("user_id", userId).first();
 
-const addUser = (user) => Users().insert(user, "user_id");
+const addUser = async (user) => {
+  const userId = await Users().insert(user, "user_id");
+  return userId[0];
+};
 
-const updateUser = (userId, updates) =>
-  Users().where("user_id", userId).update(updates, "user_id");
+const updateUser = async (userId, updates) => {
+  const updatedId = await Users()
+    .where("user_id", userId)
+    .update(updates, "user_id");
+  return updatedId[0];
+};
 
 const deleteUser = (userId) => Users().where("user_id", userId).del();
 
@@ -114,16 +121,53 @@ const addCart = async (cart) => {
   return cartId[0];
 };
 
-const addProductIntoCart = (cartId, productId) =>
-  knex("carts_products").insert({ cart_id: cartId, product_id: productId }, [
-    "cart_id",
-    "product_id",
-  ]);
+const addProductIntoCart = async (cartId, productId) => {
+  const addedIds = await knex("carts_products").insert(
+    { cart_id: cartId, product_id: productId },
+    ["cart_id", "product_id"]
+  );
+  return addedIds[0];
+};
 
 const deleteProductFromCart = (cartId, productId) =>
   knex("carts_products")
     .where({ cart_id: cartId, product_id: productId })
     .del();
+
+//CHECKOUT - INSERT USER_ID INTO ORDERS TO CREATE NEW ORDER
+
+const createOrderFromCart = async (cartId) => {
+  //Get user_id from cart and create a new order with it
+  const userId = await Carts().where("cart_id", cartId).select("user_id");
+  return Orders().insert({ user_id: userId[0].user_id }, "order_id");
+};
+
+const getProductsFromCart = async (cartId) =>
+  knex("carts_products").where("cart_id", cartId).select("product_id");
+
+const addProductsToOrder = (orderId, productArr) => {
+  //For each product in the array, add its id (with order_id) to orders_products
+  productArr.forEach(async (product) => {
+    const addedId = await knex("orders_products").insert(
+      {
+        order_id: orderId,
+        product_id: product.product_id,
+      },
+      "id"
+    );
+  });
+};
+
+const deleteProductsFromCart = (cartId) =>
+  knex("carts_products").where("cart_id", cartId).del();
+
+const checkout = async (cartId) => {
+  const orderId = await createOrderFromCart(cartId);
+  const products = await getProductsFromCart(cartId);
+  await addProductsToOrder(orderId[0], products);
+  await deleteProductsFromCart(cartId);
+  return orderId[0];
+};
 
 module.exports = {
   //products
@@ -147,4 +191,6 @@ module.exports = {
   addCart,
   addProductIntoCart,
   deleteProductFromCart,
+  //checkout
+  checkout,
 };

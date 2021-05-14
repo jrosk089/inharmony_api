@@ -2,7 +2,6 @@ process.env.NODE_ENV = "test";
 
 const chai = require("chai");
 const { expect } = chai;
-const chaiHttp = require("chai-http");
 const knex = require("../db/knex");
 const app = require("../index");
 
@@ -52,6 +51,7 @@ describe("Carts routes", () => {
           }
           expect(res).to.have.status(200);
           expect(res.body).to.be.an("array");
+          expect(res.body).to.have.lengthOf(3);
           expect(res.body[0]).to.haveOwnProperty("cart_id");
           expect(res.body[0].cart_id).to.equal(1);
           expect(res.body[0]).to.haveOwnProperty("user_id");

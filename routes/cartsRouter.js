@@ -15,7 +15,7 @@ cartsRouter.param("id", async (req, res, next, id) => {
 
   const cart = await getCartById(id);
 
-  if (!cart || cart.length < 1) {
+  if (!cart || !cart.length) {
     return res.status(404).send();
   }
   req.cart = cart;
@@ -43,7 +43,7 @@ cartsRouter.post("/", async (req, res, next) => {
   if (
     !req.body.hasOwnProperty("user_id") ||
     !req.body.hasOwnProperty("product_ids") ||
-    req.body.product_ids.length < 1
+    !req.body.product_ids.length
   ) {
     return res.status(400).send();
   }
@@ -59,7 +59,7 @@ cartsRouter.post("/:id", async (req, res, next) => {
   try {
     const { cart_id, product_id } = req.body;
     const addedProduct = await addProductIntoCart(cart_id, product_id);
-    res.status(201).json(addedProduct[0]);
+    res.status(201).json(addedProduct);
   } catch (err) {
     next(err);
   }

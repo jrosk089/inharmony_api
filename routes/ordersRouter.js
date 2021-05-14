@@ -9,7 +9,7 @@ ordersRouter.param("id", async (req, res, next, id) => {
 
   const order = await getOrderById(id);
 
-  if (!order || order.length < 1) {
+  if (!order || !order.length) {
     return res.status(404).send();
   }
   req.order = order;

@@ -37,6 +37,10 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
+//import & mount checkoutRouter
+const checkoutRouter = require("./routes/checkoutRouter");
+app.use("/api/checkout", checkoutRouter);
+
 //Create server
 const port = 3000;
 

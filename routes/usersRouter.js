@@ -38,7 +38,7 @@ usersRouter.get("/:id", (req, res, next) => {
 usersRouter.post("/", async (req, res, next) => {
   try {
     const userToAdd = await addUser(req.body);
-    const addedUser = await getUserById(userToAdd[0]);
+    const addedUser = await getUserById(userToAdd);
     res.status(201).json(addedUser);
   } catch (err) {
     next(err);
@@ -53,7 +53,7 @@ usersRouter.put("/:id", async (req, res, next) => {
   }
   try {
     const userToUpdate = await updateUser(req.params.id, req.body);
-    const updatedUser = await getUserById(userToUpdate[0]);
+    const updatedUser = await getUserById(userToUpdate);
     res.status(200).json(updatedUser);
   } catch (err) {
     next(err);
