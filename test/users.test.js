@@ -6,6 +6,8 @@ const chaiHttp = require("chai-http");
 const knex = require("../db/knex");
 const app = require("../index");
 
+const { getUserByEmail } = require("../util/knexQueries");
+
 chai.use(chaiHttp);
 
 describe("Users routes", () => {
@@ -60,6 +62,8 @@ describe("Users routes", () => {
           );
           expect(res.body).to.haveOwnProperty("email");
           expect(res.body.email).to.equal("email1@email.com");
+          expect(res.body).to.haveOwnProperty("password");
+          expect(res.body.password).to.equal("password1");
           expect(res.body).to.haveOwnProperty("last_name");
           expect(res.body.last_name).to.equal("lastname1");
           expect(res.body).to.haveOwnProperty("first_name");
@@ -82,6 +86,34 @@ describe("Users routes", () => {
     });
   });
 
+  //GET BY EMAIL -- note: I should probably have done a lot more tests like this on the actual queries.
+
+  describe("getUserByEmail function", () => {
+    it("should return a user by their email address", async () => {
+      //SETUP
+      const [userId, email, password, lastName, firstName] = [
+        "123e4567-e89b-12d3-a456-426614174001",
+        "email1@email.com",
+        "password1",
+        "lastname1",
+        "firstname1",
+      ];
+      //EXERCISE
+      const user = await getUserByEmail(email);
+      //VERIFY
+      expect(user).to.haveOwnProperty("user_id");
+      expect(user.user_id).to.equal(userId);
+      expect(user).to.haveOwnProperty("email");
+      expect(user.email).to.equal(email);
+      expect(user).to.haveOwnProperty("password");
+      expect(user.password).to.equal(password);
+      expect(user).to.haveOwnProperty("last_name");
+      expect(user.last_name).to.equal(lastName);
+      expect(user).to.haveOwnProperty("first_name");
+      expect(user.first_name).to.equal(firstName);
+    });
+  });
+
   //POST
   describe("POST users", () => {
     it("should add a user", (done) => {
@@ -90,6 +122,7 @@ describe("Users routes", () => {
         .post("/api/users")
         .send({
           email: "email4@email.com",
+          password: "password4",
           last_name: "lastname4",
           first_name: "firstname4",
         })
@@ -103,6 +136,8 @@ describe("Users routes", () => {
           expect(res.body.user_id).to.have.lengthOf(36);
           expect(res.body).to.haveOwnProperty("email");
           expect(res.body.email).to.equal("email4@email.com");
+          expect(res.body).to.haveOwnProperty("password");
+          expect(res.body.password).to.equal("password4");
           expect(res.body).to.haveOwnProperty("last_name");
           expect(res.body.last_name).to.equal("lastname4");
           expect(res.body).to.haveOwnProperty("first_name");
@@ -134,6 +169,8 @@ describe("Users routes", () => {
           );
           expect(res.body).to.haveOwnProperty("email");
           expect(res.body.email).to.equal("up@dated.com");
+          expect(res.body).to.haveOwnProperty("password");
+          expect(res.body.password).to.equal("password1");
           expect(res.body).to.haveOwnProperty("last_name");
           expect(res.body.last_name).to.equal("updatedname");
           expect(res.body).to.haveOwnProperty("first_name");

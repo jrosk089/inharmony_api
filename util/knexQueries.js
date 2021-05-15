@@ -27,6 +27,8 @@ const getAllUsers = () => Users().select();
 
 const getUserById = (userId) => Users().where("user_id", userId).first();
 
+const getUserByEmail = (email) => Users().where("email", email).first();
+
 const addUser = async (user) => {
   const userId = await Users().insert(user, "user_id");
   return userId[0];
@@ -179,6 +181,7 @@ module.exports = {
   //users
   getAllUsers,
   getUserById,
+  getUserByEmail,
   addUser,
   updateUser,
   deleteUser,

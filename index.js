@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const cors = require("cors");
+const passport = require("passport");
 
 //use bodyParser and morgan
 app.use(bodyParser.json());
@@ -11,9 +13,30 @@ app.use(
   })
 );
 
+//use cors (with default settings to start with)
+app.use(cors());
+
+//use passport for authentication
+
+app.use(passport.initialize());
+app.use(passport.session());
+require("./config/passport");
+
+//use logger if not testing
+
 if (process.env.NODE_ENV !== "test") {
   app.use(morgan("tiny"));
 }
+
+//welcome users to API
+
+app.get("/api", (req, res, next) => {
+  res.status(200).send("Welcome to the In Harmony API!");
+});
+
+//import & mount loginRouter
+const loginRouter = require("./routes/loginRouter");
+app.use("/api/login", loginRouter);
 
 //import & mount productsRouter
 const productsRouter = require("./routes/productsRouter");
