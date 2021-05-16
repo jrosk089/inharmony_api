@@ -3,7 +3,12 @@ const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const session = require("express-session");
+const FileStore = require("session-file-store")(session);
+const uuid = require("uuid").v4;
+const timestamp = require("uuid").v1;
 const passport = require("passport");
+require("./config/passport");
 
 //use bodyParser and morgan
 app.use(bodyParser.json());
@@ -16,11 +21,22 @@ app.use(
 //use cors (with default settings to start with)
 app.use(cors());
 
-//use passport for authentication
+//set up sessions
+app.use(
+  session({
+    genid: (req) => {
+      return uuid();
+    },
+    store: new FileStore(),
+    secret: timestamp(),
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
+//set up passport stuff
 app.use(passport.initialize());
 app.use(passport.session());
-require("./config/passport");
 
 //use logger if not testing
 
@@ -31,7 +47,7 @@ if (process.env.NODE_ENV !== "test") {
 //welcome users to API
 
 app.get("/api", (req, res, next) => {
-  res.status(200).send("Welcome to the In Harmony API!");
+  res.status(200).send("Welcome to the In Harmony API!\n");
 });
 
 //import & mount loginRouter
@@ -55,14 +71,15 @@ app.use("/api/orders", ordersRouter);
 const cartsRouter = require("./routes/cartsRouter");
 app.use("/api/carts", cartsRouter);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
-});
-
 //import & mount checkoutRouter
 const checkoutRouter = require("./routes/checkoutRouter");
 app.use("/api/checkout", checkoutRouter);
+
+//Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Sorry, something's gone wrong.\n");
+});
 
 //Create server
 const port = 3000;
@@ -72,7 +89,7 @@ if (process.env.NODE_ENV === "test") {
 }
 
 app.listen(port, () => {
-  console.log("App listening at http://localhost:" + port);
+  console.log(`App listening at http://localhost:${port}\n`);
 });
 
 module.exports = app;
