@@ -13,15 +13,14 @@ usersRouter.param("id", async (req, res, next, id) => {
     res.status(404).send();
   }
   const user = await getUserById(id);
-  if (user) {
-    req.user = user;
-    next();
-  } else {
-    console.log("param");
-    res.status(404).send();
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
   }
+  req.id = id;
+  next();
 });
 
+//TODO: this should only be accessible by admin
 usersRouter.get("/", async (req, res, next) => {
   try {
     const users = await getAllUsers();
@@ -32,7 +31,16 @@ usersRouter.get("/", async (req, res, next) => {
 });
 
 usersRouter.get("/:id", (req, res, next) => {
-  res.status(200).json(req.user);
+  console.log(`is authenticated? ${req.isAuthenticated()}`);
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Please log in." });
+  }
+
+  const { user, id } = req;
+  if (user.user_id !== id) {
+    return res.status(401).json({ message: `Incorrect credentials.` });
+  }
+  res.status(200).json(user);
 });
 
 usersRouter.post("/", async (req, res, next) => {

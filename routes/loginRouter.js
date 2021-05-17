@@ -10,7 +10,7 @@ loginRouter.get("/", (req, res) => {
   );
 });
 
-loginRouter.post("/", (req, res, next) => {
+const auth = (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (info) {
       return res.send(info.message);
@@ -28,11 +28,13 @@ loginRouter.post("/", (req, res, next) => {
       return res.redirect("/api/login/authrequired");
     });
   })(req, res, next);
-});
+};
+
+loginRouter.post("/", auth);
 
 loginRouter.get("/authrequired", (req, res) => {
   if (req.isAuthenticated()) {
-    res.send("you hit the authentication endpoint\n");
+    res.send("You are logged in!\n");
   } else {
     res.redirect("/api");
   }
