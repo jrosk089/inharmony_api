@@ -2,7 +2,6 @@ const express = require("express");
 const passport = require("passport");
 require("../config/passport");
 const loginRouter = express.Router({ mergeParams: true });
-const local = require("passport-local");
 
 loginRouter.get("/", (req, res) => {
   res.send(

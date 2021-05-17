@@ -1,5 +1,6 @@
 const express = require("express");
 const usersRouter = express.Router({ mergeParams: true });
+const checkAuth = require("../util/checkAuth");
 const {
   getAllUsers,
   getUserById,
@@ -20,6 +21,7 @@ usersRouter.param("id", async (req, res, next, id) => {
   next();
 });
 
+/*
 //TODO: this should only be accessible by admin
 usersRouter.get("/", async (req, res, next) => {
   try {
@@ -29,18 +31,11 @@ usersRouter.get("/", async (req, res, next) => {
     next(err);
   }
 });
+*/
 
-usersRouter.get("/:id", (req, res, next) => {
-  console.log(`is authenticated? ${req.isAuthenticated()}`);
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ message: "Please log in." });
-  }
-
-  const { user, id } = req;
-  if (user.user_id !== id) {
-    return res.status(401).json({ message: `Incorrect credentials.` });
-  }
-  res.status(200).json(user);
+usersRouter.get("/me", checkAuth, (req, res, next) => {
+  const { user_id, email, last_name, first_name } = req.user;
+  res.status(200).json({ user_id, email, last_name, first_name });
 });
 
 usersRouter.post("/", async (req, res, next) => {
@@ -53,7 +48,7 @@ usersRouter.post("/", async (req, res, next) => {
   }
 });
 
-usersRouter.put("/:id", async (req, res, next) => {
+usersRouter.put("/:id", checkAuth, async (req, res, next) => {
   if (req.body.hasOwnProperty("user_id")) {
     return res.status(422).json({
       error: "ID cannot be updated",

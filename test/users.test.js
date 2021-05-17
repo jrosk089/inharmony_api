@@ -8,6 +8,9 @@ const app = require("../index");
 
 const { getUserByEmail } = require("../util/knexQueries");
 
+const userOneCredentials = { email: "email1@email.com", password: "password1" };
+const userTwoCredentials = { email: "email2@email.com", password: "password2" };
+
 chai.use(chaiHttp);
 
 describe("Users routes", () => {
@@ -21,7 +24,8 @@ describe("Users routes", () => {
     await knex.migrate.rollback();
   });
 
-  //BASIC GET
+  /*
+  //BASIC GET - This would only be accessible by admins. That's a later TODO - a problem for future Jon.
   describe("GET users", () => {
     it("should return all users", (done) => {
       chai
@@ -43,13 +47,15 @@ describe("Users routes", () => {
         });
     });
   });
+  */
 
   //GET BY ID
-  describe("GET users/:id", () => {
-    it("should return a single user", (done) => {
+  describe("GET users/me", () => {
+    it("should return a single, logged-in user (user 1)", (done) => {
       chai
         .request(app)
-        .get("/api/users/123e4567-e89b-12d3-a456-426614174001")
+        .get("/api/users/me")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
@@ -62,8 +68,6 @@ describe("Users routes", () => {
           );
           expect(res.body).to.haveOwnProperty("email");
           expect(res.body.email).to.equal("email1@email.com");
-          expect(res.body).to.haveOwnProperty("password");
-          expect(res.body.password).to.equal("password1");
           expect(res.body).to.haveOwnProperty("last_name");
           expect(res.body.last_name).to.equal("lastname1");
           expect(res.body).to.haveOwnProperty("first_name");
@@ -72,15 +76,27 @@ describe("Users routes", () => {
         });
     });
 
-    it("should return 404 if id is invalid", (done) => {
+    it("should return a single, logged-in user (user 2)", (done) => {
       chai
         .request(app)
-        .get("/api/users/1234567")
+        .get("/api/users/me")
+        .send(userTwoCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
           }
-          expect(res).to.have.status(404);
+          expect(res).to.have.status(200);
+          expect(res).to.be.an("object");
+          expect(res.body).to.haveOwnProperty("user_id");
+          expect(res.body.user_id).to.equal(
+            "123e4567-e89b-12d3-a456-426614174002"
+          );
+          expect(res.body).to.haveOwnProperty("email");
+          expect(res.body.email).to.equal("email2@email.com");
+          expect(res.body).to.haveOwnProperty("last_name");
+          expect(res.body.last_name).to.equal("lastname2");
+          expect(res.body).to.haveOwnProperty("first_name");
+          expect(res.body.first_name).to.equal("firstname2");
           done();
         });
     });
@@ -231,18 +247,7 @@ describe("Users routes", () => {
           expect(res.body.message).to.equal(
             "User with ID 123e4567-e89b-12d3-a456-426614174001 deleted"
           );
-          chai
-            .request(app)
-            .get("/api/users")
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
-              expect(res).to.have.status(200);
-              expect(res.body).to.be.an("array");
-              expect(res.body).to.have.lengthOf(2);
-              done();
-            });
+          done();
         });
     });
   });
