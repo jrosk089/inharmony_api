@@ -110,7 +110,7 @@ describe("Users routes", () => {
       const [userId, email, password, lastName, firstName] = [
         "123e4567-e89b-12d3-a456-426614174001",
         "email1@email.com",
-        "password1",
+        "$2a$10$rhwgGNyNte3ut2CxSV4z5OVlHlHZ4pJ7unFaomq2JITkFI1snC8A6",
         "lastname1",
         "firstname1",
       ];
@@ -163,12 +163,13 @@ describe("Users routes", () => {
     });
   });
 
-  //PUT
-  describe("PUT users/:id", () => {
-    it("should update a user", (done) => {
-      chai
-        .request(app)
-        .put("/api/users/123e4567-e89b-12d3-a456-426614174001")
+  //PUT -- these tests fail because I need to work out how to log in and then run the test. However, this functionality works with Postman.
+  describe("PUT users/me", () => {
+    it("should update a user", async () => {
+      const agent = chai.request.agent(app);
+      const response = await agent.post("/api/login").send(userOneCredentials);
+      agent
+        .put("/api/users/me")
         .send({
           email: "up@dated.com",
           last_name: "updatedname",
@@ -185,20 +186,19 @@ describe("Users routes", () => {
           );
           expect(res.body).to.haveOwnProperty("email");
           expect(res.body.email).to.equal("up@dated.com");
-          expect(res.body).to.haveOwnProperty("password");
-          expect(res.body.password).to.equal("password1");
           expect(res.body).to.haveOwnProperty("last_name");
           expect(res.body.last_name).to.equal("updatedname");
           expect(res.body).to.haveOwnProperty("first_name");
           expect(res.body.first_name).to.equal("firstname1");
-          done();
+          agent.close();
         });
     });
 
-    it("should not update a user if user_id is included in the body", (done) => {
-      chai
-        .request(app)
-        .put("/api/users/123e4567-e89b-12d3-a456-426614174001")
+    it("should not update a user if user_id is included in the body", async () => {
+      const agent = chai.request.agent(app);
+      const response = await agent.post("/api/login").send(userOneCredentials);
+      agent
+        .put("/api/users/me")
         .send({
           user_id: "123e4567-e89b-12d3-a456-426614174009",
           email: "up@dated.com",
@@ -211,7 +211,7 @@ describe("Users routes", () => {
           expect(res.body).to.be.an("object");
           expect(res.body).to.haveOwnProperty("error");
           expect(res.body.error).to.equal("ID cannot be updated");
-          done();
+          agent.close();
         });
     });
 

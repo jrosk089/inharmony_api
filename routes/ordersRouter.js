@@ -1,5 +1,6 @@
 const express = require("express");
 const ordersRouter = express.Router({ mergeParams: true });
+const checkAuth = require("../util/checkAuth");
 const { getAllOrders, getOrderById } = require("../util/knexQueries");
 
 ordersRouter.param("id", async (req, res, next, id) => {
@@ -15,6 +16,8 @@ ordersRouter.param("id", async (req, res, next, id) => {
   req.order = order;
   next();
 });
+
+//TODO - change these (and the equivalent cart routes) so that they only get information for a logged in user
 
 ordersRouter.get("/", async (req, res, next) => {
   try {

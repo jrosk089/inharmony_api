@@ -48,14 +48,15 @@ usersRouter.post("/", async (req, res, next) => {
   }
 });
 
-usersRouter.put("/:id", checkAuth, async (req, res, next) => {
+usersRouter.put("/me", async (req, res, next) => {
   if (req.body.hasOwnProperty("user_id")) {
     return res.status(422).json({
       error: "ID cannot be updated",
     });
   }
   try {
-    const userToUpdate = await updateUser(req.params.id, req.body);
+    const { user_id } = req.user;
+    const userToUpdate = await updateUser(user_id, req.body);
     const updatedUser = await getUserById(userToUpdate);
     res.status(200).json(updatedUser);
   } catch (err) {
