@@ -17,6 +17,18 @@ exports.seed = function (knex) {
     .then(function () {
       // Inserts seed entries
       return knex("orders").insert({
+        user_id: "123e4567-e89b-12d3-a456-426614174001",
+      });
+    })
+    .then(function () {
+      // Inserts seed entries
+      return knex("orders").insert({
+        user_id: "123e4567-e89b-12d3-a456-426614174001",
+      });
+    })
+    .then(function () {
+      // Inserts seed entries
+      return knex("orders").insert({
         user_id: "123e4567-e89b-12d3-a456-426614174003",
       });
     });

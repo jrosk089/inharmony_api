@@ -49,8 +49,9 @@ const Orders = () => knex("orders AS o");
 
 //return order id, user id, number of items in order and total price of order
 
-const getAllOrders = () =>
+const getOrdersForUser = (userId) =>
   Orders()
+    .where("u.user_id", userId)
     .select("o.order_id", "u.user_id")
     .count("p.name AS num_items")
     .sum("p.price AS total_price")
@@ -60,9 +61,10 @@ const getAllOrders = () =>
     .groupBy(1, 2)
     .orderBy(1, "ASC");
 
-const getOrderById = (orderId) =>
+const getOrderById = (orderId, userId) =>
   Orders()
     .where("o.order_id", orderId)
+    .andWhere("u.user_id", userId)
     .select(
       "o.order_id",
       "u.user_id",
@@ -186,7 +188,7 @@ module.exports = {
   updateUser,
   deleteUser,
   //orders
-  getAllOrders,
+  getOrdersForUser,
   getOrderById,
   //carts
   getAllCarts,

@@ -8,6 +8,8 @@ const app = require("../index");
 
 chai.use(chaiHttp);
 
+const userOneCredentials = { email: "email1@email.com", password: "password1" };
+
 describe("Orders routes", () => {
   beforeEach(async () => {
     await knex.migrate.rollback();
@@ -20,10 +22,11 @@ describe("Orders routes", () => {
   });
 
   describe("GET orders", () => {
-    it("should return all orders", (done) => {
+    it("should return all orders for a specific user", (done) => {
       chai
         .request(app)
         .get("/api/orders")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
@@ -39,6 +42,19 @@ describe("Orders routes", () => {
           done();
         });
     });
+
+    it("should not return orders if user not logged in", (done) => {
+      chai
+        .request(app)
+        .get("/api/users/orders")
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(404);
+          done();
+        });
+    });
   });
 
   describe("GET orders/:id", () => {
@@ -46,6 +62,7 @@ describe("Orders routes", () => {
       chai
         .request(app)
         .get("/api/orders/1")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
@@ -73,6 +90,7 @@ describe("Orders routes", () => {
       chai
         .request(app)
         .get("/api/orders/299")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
@@ -87,6 +105,22 @@ describe("Orders routes", () => {
       chai
         .request(app)
         .get("/api/orders/bolivia")
+        .send(userOneCredentials)
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+          expect(res).to.have.status(404);
+          expect(res.body).to.be.an("object").and.to.be.empty;
+          done();
+        });
+    });
+
+    it("should return status 404 if user tries to access an order that isn't theirs", (done) => {
+      chai
+        .request(app)
+        .get("/api/orders/2")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;

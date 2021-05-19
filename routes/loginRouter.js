@@ -18,7 +18,7 @@ const auth = (req, res, next) => {
       return next(err);
     }
     if (!user) {
-      return res.redirect("/api/login");
+      return res.status(401).send("Unable to log in.\n");
     }
     req.login(user, (err) => {
       if (err) {
@@ -35,7 +35,7 @@ loginRouter.get("/authrequired", (req, res) => {
   if (req.isAuthenticated()) {
     res.send("You are logged in!\n");
   } else {
-    res.redirect("/api");
+    res.status(401).send("Unable to log in.\n");
   }
 });
 

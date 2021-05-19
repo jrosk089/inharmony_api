@@ -14,6 +14,9 @@ exports.seed = function (knex) {
         { order_id: 3, product_id: 3 },
         { order_id: 3, product_id: 3 },
         { order_id: 3, product_id: 2 },
+        { order_id: 4, product_id: 3 },
+        { order_id: 4, product_id: 2 },
+        { order_id: 5, product_id: 1 },
       ]);
     });
 };
