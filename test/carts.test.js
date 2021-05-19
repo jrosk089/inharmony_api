@@ -1,9 +1,15 @@
 process.env.NODE_ENV = "test";
 
 const chai = require("chai");
+const chaiHttp = require("chai-http");
+const { agent } = require("supertest");
 const { expect } = chai;
 const knex = require("../db/knex");
 const app = require("../index");
+
+chai.use(chaiHttp);
+
+const userOneCredentials = require("../util/userOneCredentials");
 
 describe("Carts routes", () => {
   beforeEach(async () => {
@@ -18,17 +24,18 @@ describe("Carts routes", () => {
 
   //GET
   describe("GET carts", () => {
-    it("should return all carts", (done) => {
+    it("should return all carts for a user", (done) => {
       chai
         .request(app)
         .get("/api/carts")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
           }
           expect(res).to.have.status(200);
           expect(res.body).to.be.an("array");
-          expect(res.body).to.have.lengthOf(3);
+          expect(res.body).to.have.lengthOf(1);
           expect(res.body[0]).to.haveOwnProperty("cart_id");
           expect(res.body[0].cart_id).to.equal(1);
           expect(res.body[0]).to.haveOwnProperty("user_id");
@@ -45,6 +52,7 @@ describe("Carts routes", () => {
       chai
         .request(app)
         .get("/api/carts/1")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
@@ -72,6 +80,7 @@ describe("Carts routes", () => {
       chai
         .request(app)
         .get("/api/carts/299")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
@@ -86,6 +95,7 @@ describe("Carts routes", () => {
       chai
         .request(app)
         .get("/api/carts/bolivia")
+        .send(userOneCredentials)
         .end((err, res) => {
           if (err) {
             throw err;
@@ -99,12 +109,12 @@ describe("Carts routes", () => {
 
   //POST
   describe("POST carts", () => {
-    it("should add a cart with products", (done) => {
-      chai
-        .request(app)
+    it("should add a cart with products", async () => {
+      const agent = chai.request.agent(app);
+      await agent.post("/api/login").send(userOneCredentials);
+      agent
         .post("/api/carts")
         .send({
-          user_id: "123e4567-e89b-12d3-a456-426614174001",
           product_ids: [1, 1, 2, 3],
         })
         .end((err, res) => {
@@ -114,91 +124,33 @@ describe("Carts routes", () => {
           expect(res).to.have.status(201);
           expect(res.body).to.haveOwnProperty("cart_id");
           expect(res.body.cart_id).to.equal(4);
-          chai
-            .request(app)
-            .get("/api/carts/4")
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
-              expect(res).to.have.status(200);
-              expect(res.body).to.be.an("array");
-              expect(res.body[0]).to.haveOwnProperty("product_name");
-              expect(res.body[0]).to.haveOwnProperty("cart_id");
-              expect(res.body[0].cart_id).to.equal(4);
-              expect(res.body[0]).to.haveOwnProperty("user_id");
-              expect(res.body[0].user_id).to.equal(
-                "123e4567-e89b-12d3-a456-426614174001"
-              );
-              expect(res.body[0]).to.haveOwnProperty("product_name");
-              expect(res.body[0].product_name).to.equal("testname1");
-              expect(res.body[0]).to.haveOwnProperty("unit_price");
-              expect(res.body[0].unit_price).to.equal("400.00");
-              expect(res.body[0]).to.haveOwnProperty("num_units");
-              expect(res.body[0].num_units).to.equal("2");
-              done();
-            });
+          agent.close();
         });
     });
 
-    it("should not add a cart if no products are specified", (done) => {
-      chai
-        .request(app)
+    it("should not add a cart if no products are specified", async () => {
+      const agent = chai.request.agent(app);
+      await agent.post("/api/login").send(userOneCredentials);
+      agent
         .post("/api/carts")
-        .send({
-          user_id: "123e4567-e89b-12d3-a456-426614174001",
-        })
+        .send()
         .end((err, res) => {
           if (err) {
             throw err;
           }
           expect(res).to.have.status(400);
           expect(res.body).to.be.empty;
-          chai
-            .request(app)
-            .get("/api/carts")
-            .end((err, res) => {
-              expect(res).to.have.status(200);
-              expect(res.body).to.have.lengthOf(3);
-              done();
-            });
-        });
-    });
-
-    it("should not add a cart if an empty array is passed to products", (done) => {
-      chai
-        .request(app)
-        .post("/api/carts")
-        .send({
-          user_id: "123e4567-e89b-12d3-a456-426614174001",
-          product_ids: [],
-        })
-        .end((err, res) => {
-          if (err) {
-            throw err;
-          }
-          expect(res).to.have.status(400);
-          expect(res.body).to.be.empty;
-          chai
-            .request(app)
-            .get("/api/carts")
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
-              expect(res).to.have.status(200);
-              expect(res.body).to.have.lengthOf(3);
-              done();
-            });
+          agent.close();
         });
     });
   });
 
   //POST BY ID
   describe("POST carts/:id", () => {
-    it("should add a product into a cart", (done) => {
-      chai
-        .request(app)
+    it("should add a product into a cart", async () => {
+      const agent = chai.request.agent(app);
+      await agent.post("/api/login").send(userOneCredentials);
+      agent
         .post("/api/carts/1")
         .send({
           cart_id: 1,
@@ -214,38 +166,17 @@ describe("Carts routes", () => {
           expect(res.body.cart_id).to.equal(1);
           expect(res.body).to.haveOwnProperty("product_id");
           expect(res.body.product_id).to.equal(1);
-          chai
-            .request(app)
-            .get("/api/carts/1")
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
-              expect(res).to.have.status(200);
-              expect(res.body).to.be.an("array");
-              expect(res.body[0]).to.haveOwnProperty("cart_id");
-              expect(res.body[0].cart_id).to.equal(1);
-              expect(res.body[0]).to.haveOwnProperty("user_id");
-              expect(res.body[0].user_id).to.equal(
-                "123e4567-e89b-12d3-a456-426614174001"
-              );
-              expect(res.body[0]).to.haveOwnProperty("product_name");
-              expect(res.body[0].product_name).to.equal("testname1");
-              expect(res.body[0]).to.haveOwnProperty("unit_price");
-              expect(res.body[0].unit_price).to.equal("400.00");
-              expect(res.body[0]).to.haveOwnProperty("num_units");
-              expect(res.body[0].num_units).to.equal("2");
-              done();
-            });
+          agent.close();
         });
     });
   });
 
   //DELETE BY ID
   describe("DELETE carts/:id", () => {
-    it("should delete a product from a cart", (done) => {
-      chai
-        .request(app)
+    it("should delete a product from a cart", async () => {
+      const agent = chai.request.agent(app);
+      await agent.post("/api/login").send(userOneCredentials);
+      agent
         .delete("/api/carts/1")
         .send({ cart_id: 1, product_id: 1 })
         .end((err, res) => {
@@ -253,19 +184,7 @@ describe("Carts routes", () => {
             throw err;
           }
           expect(res).to.have.status(204);
-          chai
-            .request(app)
-            .get("/api/carts/1")
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
-              expect(res).to.have.status(200);
-              expect(res.body).to.have.lengthOf(2);
-              expect(res.body[0]).to.haveOwnProperty("product_name");
-              expect(res.body[0].product_name).to.not.equal(1);
-              done();
-            });
+          agent.close();
         });
     });
   });

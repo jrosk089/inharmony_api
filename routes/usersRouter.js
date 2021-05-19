@@ -38,7 +38,7 @@ usersRouter.get("/me", checkAuth, (req, res, next) => {
   res.status(200).json({ user_id, email, last_name, first_name });
 });
 
-usersRouter.post("/", async (req, res, next) => {
+usersRouter.post("/register", async (req, res, next) => {
   try {
     const userToAdd = await addUser(req.body);
     const addedUser = await getUserById(userToAdd);

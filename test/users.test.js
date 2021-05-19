@@ -8,7 +8,7 @@ const app = require("../index");
 
 const { getUserByEmail } = require("../util/knexQueries");
 
-const userOneCredentials = { email: "email1@email.com", password: "password1" };
+const userOneCredentials = require("../util/userOneCredentials");
 const userTwoCredentials = { email: "email2@email.com", password: "password2" };
 
 chai.use(chaiHttp);
@@ -131,11 +131,11 @@ describe("Users routes", () => {
   });
 
   //POST
-  describe("POST users", () => {
+  describe("POST users/register", () => {
     it("should add a user", (done) => {
       chai
         .request(app)
-        .post("/api/users")
+        .post("/api/users/register")
         .send({
           email: "email4@email.com",
           password: "password4",
@@ -153,7 +153,7 @@ describe("Users routes", () => {
           expect(res.body).to.haveOwnProperty("email");
           expect(res.body.email).to.equal("email4@email.com");
           expect(res.body).to.haveOwnProperty("password");
-          expect(res.body.password).to.equal("password4");
+          expect(res.body.password).to.not.equal("password4");
           expect(res.body).to.haveOwnProperty("last_name");
           expect(res.body.last_name).to.equal("lastname4");
           expect(res.body).to.haveOwnProperty("first_name");
@@ -167,7 +167,7 @@ describe("Users routes", () => {
   describe("PUT users/me", () => {
     it("should update a user", async () => {
       const agent = chai.request.agent(app);
-      const response = await agent.post("/api/login").send(userOneCredentials);
+      await agent.post("/api/login").send(userOneCredentials);
       agent
         .put("/api/users/me")
         .send({

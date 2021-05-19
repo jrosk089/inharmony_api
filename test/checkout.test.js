@@ -5,6 +5,8 @@ const { expect } = chai;
 const knex = require("../db/knex");
 const app = require("../index");
 
+const userOneCredentials = require("../util/userOneCredentials");
+
 describe("Checkout", () => {
   beforeEach(async () => {
     await knex.migrate.rollback();
@@ -28,10 +30,11 @@ describe("Checkout", () => {
         expect(res).to.have.status(201);
         expect(res.body).to.be.an("object");
         expect(res.body).to.haveOwnProperty("order_id");
-        expect(res.body.order_id).to.equal(4);
+        expect(res.body.order_id).to.equal(6);
         chai
           .request(app)
-          .get("/api/orders/4")
+          .get("/api/orders/6")
+          .send(userOneCredentials)
           .end((err, res) => {
             if (err) {
               throw err;
@@ -40,7 +43,7 @@ describe("Checkout", () => {
             expect(res.body).to.be.an("array");
             expect(res.body).to.have.lengthOf(3);
             expect(res.body[0]).to.haveOwnProperty("order_id");
-            expect(res.body[0].order_id).to.equal(4);
+            expect(res.body[0].order_id).to.equal(6);
             expect(res.body[0]).to.haveOwnProperty("user_id");
             expect(res.body[0].user_id).to.equal(
               "123e4567-e89b-12d3-a456-426614174001"
@@ -68,10 +71,11 @@ describe("Checkout", () => {
         expect(res).to.have.status(201);
         expect(res.body).to.be.an("object");
         expect(res.body).to.haveOwnProperty("order_id");
-        expect(res.body.order_id).to.equal(4);
+        expect(res.body.order_id).to.equal(6);
         chai
           .request(app)
           .get("/api/carts/1")
+          .send(userOneCredentials)
           .end((err, res) => {
             if (err) {
               throw err;

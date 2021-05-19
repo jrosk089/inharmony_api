@@ -1,4 +1,5 @@
 const knex = require("../db/knex");
+const bcrypt = require("bcryptjs");
 
 //PRODUCTS
 
@@ -23,6 +24,8 @@ const deleteProduct = (productId) =>
 
 const Users = () => knex("users");
 
+const generatePassword = (password) => bcrypt.hash(password, 10);
+
 const getAllUsers = () => Users().select();
 
 const getUserById = (userId) => Users().where("user_id", userId).first();
@@ -30,7 +33,17 @@ const getUserById = (userId) => Users().where("user_id", userId).first();
 const getUserByEmail = (email) => Users().where("email", email).first();
 
 const addUser = async (user) => {
-  const userId = await Users().insert(user, "user_id");
+  const { email, last_name, first_name } = user;
+  const password = await generatePassword(user.password);
+  const userId = await Users().insert(
+    {
+      email: email,
+      password: password,
+      last_name: last_name,
+      first_name: first_name,
+    },
+    "user_id"
+  );
   return userId[0];
 };
 
@@ -84,8 +97,9 @@ const Carts = () => knex("carts AS c");
 
 //return cart id, user id, number of items in cart and total price of cart
 
-const getAllCarts = () =>
+const getCartsForUser = (userId) =>
   Carts()
+    .where("u.user_id", userId)
     .select("c.cart_id", "u.user_id")
     .count("p.name AS num_items")
     .sum("p.price AS total_price")
@@ -95,9 +109,10 @@ const getAllCarts = () =>
     .groupBy(1, 2)
     .orderBy(1, "ASC");
 
-const getCartById = (cartId) =>
+const getCartById = (cartId, userId) =>
   Carts()
     .where("c.cart_id", cartId)
+    .andWhere("u.user_id", userId)
     .select(
       "c.cart_id",
       "u.user_id",
@@ -111,11 +126,10 @@ const getCartById = (cartId) =>
     .groupBy(1, 2, 3, 4)
     .orderBy(3, "ASC");
 
-const addCart = async (cart) => {
-  const { user_id, product_ids } = cart;
-  const cartId = await Carts().insert({ user_id: user_id }, "cart_id");
+const addCart = async (productIds, userId) => {
+  const cartId = await Carts().insert({ user_id: userId }, "cart_id");
 
-  product_ids.forEach(async (productId) => {
+  productIds.forEach(async (productId) => {
     await knex("carts_products").insert({
       product_id: productId,
       cart_id: cartId[0],
@@ -191,7 +205,7 @@ module.exports = {
   getOrdersForUser,
   getOrderById,
   //carts
-  getAllCarts,
+  getCartsForUser,
   getCartById,
   addCart,
   addProductIntoCart,
