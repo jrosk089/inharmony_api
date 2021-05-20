@@ -8,32 +8,10 @@ const uuid = require("uuid").v4;
 const timestamp = require("uuid").v1;
 const passport = require("passport");
 require("./config/passport");
-const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerSpec = require("./config/swagger");
 const swaggerUi = require("swagger-ui-express");
 
 const app = express();
-
-// swagger definition
-const swaggerDefinition = {
-  info: {
-    title: "In Harmony API",
-    version: "1.0.0",
-    description: "RESTful API for the In Harmony music store",
-  },
-  host: process.env.PORT || "localhost:3000",
-  basePath: "/api",
-};
-
-// options for the swagger docs
-const options = {
-  // import swaggerDefinitions
-  swaggerDefinition: swaggerDefinition,
-  // path to the API docs
-  apis: ["./routes/*.js"],
-};
-
-// initialize swagger-jsdoc
-const swaggerSpec = swaggerJSDoc(options);
 
 //use bodyParser and morgan
 app.use(bodyParser.json());
@@ -73,11 +51,6 @@ if (process.env.NODE_ENV !== "test") {
 
 app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get("/api/swagger.json", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.send(swaggerSpec);
-});
-
 //welcome users to API
 
 app.get("/api", (req, res, next) => {
@@ -116,7 +89,7 @@ app.use((err, req, res, next) => {
 });
 
 //Create server
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV === "test") {
   console.log("testing");
