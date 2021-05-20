@@ -60,14 +60,14 @@ loginRouter.post("/", auth);
  *   get:
  *     tags:
  *       - Login
- *   description: Checks if user is authenticated
- *   produces:
- *     - application/json
- *   responses:
- *     200:
- *       description: User is authenticated
- *     401:
- *       description: User is not authenticated
+ *     description: Checks if user is authenticated
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: User is authenticated
+ *       401:
+ *         description: User is not authenticated
  */
 
 loginRouter.get("/authrequired", (req, res) => {

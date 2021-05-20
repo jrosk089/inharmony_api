@@ -74,14 +74,14 @@ productsRouter.get("/", async (req, res, next) => {
  *     tags:
  *       - Products
  *     description: Returns a single product
- *     parameters:
- *       name: id
- *       description: Product id
- *       in: path
- *       required: true
- *       type: integer
  *     produces:
  *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: Product id
+ *         in: path
+ *         required: true
+ *         type: integer
  *     responses:
  *       200:
  *         description: An object with information about one product

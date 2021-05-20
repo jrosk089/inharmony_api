@@ -33,10 +33,79 @@ usersRouter.get("/", async (req, res, next) => {
 });
 */
 
+/**
+ * @swagger
+ * /api/users/me:
+ *   get:
+ *     tags:
+ *       - Users
+ *     description: Get data for a logged-in user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: user_id
+ *         description: User id
+ *         in: req.user
+ *         required: true
+ *         type: uuid
+ *     responses:
+ *       200:
+ *         description: Object with user data
+ *         schema:
+ *           user_id:
+ *             type: uuid
+ *           email:
+ *             type: string
+ *           last_name:
+ *             type: string
+ *           first_name:
+ *             type: string
+ *           example: { user_id: 123e4567-e89b-12d3-a456-426614174001, email: email1@email.com, last_name: Bobberson, first_name: Bob }
+ */
+
 usersRouter.get("/me", checkAuth, (req, res, next) => {
   const { user_id, email, last_name, first_name } = req.user;
   res.status(200).json({ user_id, email, last_name, first_name });
 });
+
+/**
+ * @swagger
+ * /api/users/register:
+ *   post:
+ *     tags:
+ *       - Users
+ *     description: Register a new user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: email
+ *         description: Email address
+ *         in: body
+ *         required: true
+ *         example: email1@email.com
+ *       - name: password
+ *         description: Password
+ *         in: body
+ *         required: true
+ *         example: password
+ *       - name: last_name
+ *         description: Last name
+ *         in: body
+ *         required: true
+ *         example: Bobberson
+ *       - name: first_name
+ *         description: First name
+ *         in: body
+ *         required: true
+ *         example: Bob
+ *     responses:
+ *        200:
+ *          description: ID of created user
+ *          schema:
+ *            user_id:
+ *              type: uuid
+ *            example: { user_id: 123e4567-e89b-12d3-a456-426614174006 }
+ */
 
 usersRouter.post("/register", async (req, res, next) => {
   try {
@@ -47,6 +116,36 @@ usersRouter.post("/register", async (req, res, next) => {
     next(err);
   }
 });
+
+/**
+ * @swagger
+ * /api/users/me:
+ *   put:
+ *     tags:
+ *       - Users
+ *     description: Updates a user
+ *     produces: application/json
+ *     parameters:
+ *       - in: body
+ *         name: Parameters to update
+ *         schema:
+ *           enum: [email, password, last_name, first_name]
+ *           example: { password: newpass, first_name: Michael }
+ *     responses:
+ *       201:
+ *         description: ID of successfully updated user
+ *         schema:
+ *           user_id:
+ *             type: uuid
+ *           example: { user_id: 123e4567-e89b-12d3-a456-426614174001 }
+ *       422:
+ *         description: ID was included in parameter to update, which is not allowed
+ *         schema:
+ *           error:
+ *             type: string
+ *           example: ID cannot be updated
+ *
+ */
 
 usersRouter.put("/me", async (req, res, next) => {
   if (req.body.hasOwnProperty("user_id")) {
@@ -63,6 +162,29 @@ usersRouter.put("/me", async (req, res, next) => {
     next(err);
   }
 });
+
+/**
+ * @swagger
+ * /api/user/{id}:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     description: Delete a user
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: user_id
+ *         description: The id of the user to be deleted
+ *         in: path
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Success message
+ *         schema:
+ *           message:
+ *             type: string
+ *           example: User with id 123e4567-e89b-12d3-a456-426614174001 deleted
+ */
 
 usersRouter.delete("/:id", async (req, res, next) => {
   try {
