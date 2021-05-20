@@ -1,5 +1,4 @@
 const express = require("express");
-const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -9,6 +8,32 @@ const uuid = require("uuid").v4;
 const timestamp = require("uuid").v1;
 const passport = require("passport");
 require("./config/passport");
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+
+const app = express();
+
+// swagger definition
+const swaggerDefinition = {
+  info: {
+    title: "In Harmony API",
+    version: "1.0.0",
+    description: "RESTful API for the In Harmony music store",
+  },
+  host: process.env.PORT || "localhost:3000",
+  basePath: "/api",
+};
+
+// options for the swagger docs
+const options = {
+  // import swaggerDefinitions
+  swaggerDefinition: swaggerDefinition,
+  // path to the API docs
+  apis: ["./routes/*.js"],
+};
+
+// initialize swagger-jsdoc
+const swaggerSpec = swaggerJSDoc(options);
 
 //use bodyParser and morgan
 app.use(bodyParser.json());
@@ -43,6 +68,15 @@ app.use(passport.session());
 if (process.env.NODE_ENV !== "test") {
   app.use(morgan("tiny"));
 }
+
+//swagger
+
+app.use("/api/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.get("/api/swagger.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 //welcome users to API
 
