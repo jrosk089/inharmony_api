@@ -43,7 +43,7 @@ app.use(passport.session());
 
 //use logger if not testing
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV === "development") {
   app.use(morgan("tiny"));
 }
 
