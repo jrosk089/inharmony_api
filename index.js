@@ -6,6 +6,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session);
+const timestamp = require("uuid").v1;
 const uuid = require("uuid").v4;
 const passport = require("passport");
 require("./config/passport");
@@ -32,7 +33,7 @@ app.use(
       return uuid();
     },
     store: new FileStore(),
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || timestamp(),
     resave: false,
     saveUninitialized: true,
   })
